@@ -63,6 +63,10 @@ export default class CmlConvertSurchargeRules extends SfCommand<CmlConvertSurcha
       char: 'f',
       exists: true,
     }),
+    'surcharge-ids': Flags.string({
+      summary: messages.getMessage('flags.surcharge-ids.summary'),
+      char: 's',
+    }),
   };
 
   public async run(): Promise<CmlConvertSurchargeRulesResult> {
@@ -100,9 +104,17 @@ export default class CmlConvertSurchargeRules extends SfCommand<CmlConvertSurcha
 
     this.log('Querying ProductSurcharge records from org...');
     const conn = targetOrg.getConnection(flags['api-version'] as string | undefined);
-    const result = await conn.query<ProductSurchargeRecord>(
-      'SELECT Id, Name, RuleApiName, RuleDefinition, ProductPath FROM ProductSurcharge WHERE RuleApiName != null'
-    );
+    const surchargeIds = flags['surcharge-ids'] as string | undefined;
+    let soql =
+      'SELECT Id, Name, RuleApiName, RuleDefinition, ProductPath FROM ProductSurcharge WHERE RuleApiName != null';
+    if (surchargeIds) {
+      const idList = surchargeIds
+        .split(',')
+        .map((id) => `'${id.trim()}'`)
+        .join(',');
+      soql += ` AND Id IN (${idList})`;
+    }
+    const result = await conn.query<ProductSurchargeRecord>(soql);
     this.log(`Found ${result.records.length} ProductSurcharge records with BRE rules`);
     return result.records;
   }

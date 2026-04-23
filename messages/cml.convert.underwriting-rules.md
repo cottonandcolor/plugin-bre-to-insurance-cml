@@ -28,3 +28,7 @@ Directory where output files will be written.
 # flags.uw-file.summary
 
 Optional JSON file with pre-exported UnderwritingRule records. If omitted, records are queried from the org.
+
+# flags.uw-ids.summary
+
+Comma-separated list of UnderwritingRule record IDs to convert. If omitted, all records with dynamic rules are converted.

@@ -21,16 +21,25 @@
     "alias": [],
     "command": "cml:convert:surcharge-rules",
     "flagAliases": [],
-    "flagChars": ["c", "d", "f", "o"],
-    "flags": ["api-version", "cml-api", "flags-dir", "json", "surcharge-file", "target-org", "workspace-dir"],
+    "flagChars": ["c", "d", "f", "o", "s"],
+    "flags": [
+      "api-version",
+      "cml-api",
+      "flags-dir",
+      "json",
+      "surcharge-file",
+      "surcharge-ids",
+      "target-org",
+      "workspace-dir"
+    ],
     "plugin": "@salesforce/plugin-bre-to-cml"
   },
   {
     "alias": [],
     "command": "cml:convert:underwriting-rules",
     "flagAliases": [],
-    "flagChars": ["c", "d", "f", "o"],
-    "flags": ["api-version", "cml-api", "flags-dir", "json", "target-org", "uw-file", "workspace-dir"],
+    "flagChars": ["c", "d", "f", "o", "s"],
+    "flags": ["api-version", "cml-api", "flags-dir", "json", "target-org", "uw-file", "uw-ids", "workspace-dir"],
     "plugin": "@salesforce/plugin-bre-to-cml"
   },
   {

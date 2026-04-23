@@ -28,3 +28,7 @@ Directory where output files will be written.
 # flags.surcharge-file.summary
 
 Optional JSON file with pre-exported ProductSurcharge records. If omitted, records are queried from the org.
+
+# flags.surcharge-ids.summary
+
+Comma-separated list of ProductSurcharge record IDs to convert. If omitted, all records with BRE rules are converted.

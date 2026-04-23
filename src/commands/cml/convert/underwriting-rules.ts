@@ -66,6 +66,10 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
       char: 'f',
       exists: true,
     }),
+    'uw-ids': Flags.string({
+      summary: messages.getMessage('flags.uw-ids.summary'),
+      char: 's',
+    }),
   };
 
   public async run(): Promise<CmlConvertUnderwritingRulesResult> {
@@ -103,9 +107,17 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
 
     this.log('Querying UnderwritingRule records from org...');
     const conn = targetOrg.getConnection(flags['api-version'] as string | undefined);
-    const result = await conn.query<UnderwritingRuleRecord>(
-      'SELECT Id, Name, ApiName, DynamicRuleDefinition, ProductPath, Status, Sequence, RuleKey FROM UnderwritingRule'
-    );
+    const uwIds = flags['uw-ids'] as string | undefined;
+    let soql =
+      'SELECT Id, Name, ApiName, DynamicRuleDefinition, ProductPath, Status, Sequence, RuleKey FROM UnderwritingRule WHERE DynamicRuleDefinition != null';
+    if (uwIds) {
+      const idList = uwIds
+        .split(',')
+        .map((id) => `'${id.trim()}'`)
+        .join(',');
+      soql += ` AND Id IN (${idList})`;
+    }
+    const result = await conn.query<UnderwritingRuleRecord>(soql);
     this.log(`Found ${result.records.length} UnderwritingRule records with BRE rules`);
     return result.records;
   }
