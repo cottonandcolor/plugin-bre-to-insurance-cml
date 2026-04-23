@@ -66,6 +66,7 @@ export type RuleKeyEntry = {
   recordId: string;
   name: string;
   ruleKey: string;
+  metadata?: Record<string, unknown>;
 };
 
 function doubleQuoted(value: string | undefined): string {

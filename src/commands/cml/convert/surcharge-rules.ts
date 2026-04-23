@@ -32,6 +32,13 @@ const messages = Messages.loadMessages('@salesforce/plugin-bre-to-cml', 'cml.con
 type ProductSurchargeRecord = RuleRecord & {
   RuleApiName: string | null;
   RuleDefinition: string | null;
+  Description: string | null;
+  Status: string | null;
+  SequenceNumber: number | null;
+  EffectiveFromDate: string | null;
+  EffectiveToDate: string | null;
+  IsProrationAllowed: boolean | null;
+  IsRefundAllowed: boolean | null;
 };
 
 export type CmlConvertSurchargeRulesResult = {
@@ -93,6 +100,23 @@ export default class CmlConvertSurchargeRules extends SfCommand<CmlConvertSurcha
     const ruleDefs = this.parseRuleDefinitions(records);
     const productIdToCode = await this.resolveProductCodes(ruleDefs, targetOrg, flags);
     const { cmlModel, ruleKeyMapping } = buildCmlModel(ruleDefs, productIdToCode, 'SC', 'Surcharge eligibility');
+
+    const recordById = new Map(records.map((r) => [r.Id, r]));
+    for (const entry of ruleKeyMapping) {
+      const rec = recordById.get(entry.recordId);
+      if (rec) {
+        entry.metadata = {
+          status: rec.Status,
+          description: rec.Description,
+          sequenceNumber: rec.SequenceNumber,
+          effectiveFromDate: rec.EffectiveFromDate,
+          effectiveToDate: rec.EffectiveToDate,
+          isProrationAllowed: rec.IsProrationAllowed,
+          isRefundAllowed: rec.IsRefundAllowed,
+          productPath: rec.ProductPath,
+        };
+      }
+    }
     ruleKeyMapping.forEach((m) => this.log(`  -> ${m.name} => ${m.ruleKey}`));
 
     const result = await this.writeOutputFiles(cmlModel, ruleKeyMapping, safeApi, workspaceDir, api);
@@ -121,7 +145,7 @@ export default class CmlConvertSurchargeRules extends SfCommand<CmlConvertSurcha
     const conn = targetOrg.getConnection(flags['api-version'] as string | undefined);
     const surchargeIds = flags['surcharge-ids'] as string | undefined;
     let soql =
-      'SELECT Id, Name, RuleApiName, RuleDefinition, ProductPath FROM ProductSurcharge WHERE RuleApiName != null';
+      'SELECT Id, Name, RuleApiName, RuleDefinition, ProductPath, Description, Status, SequenceNumber, EffectiveFromDate, EffectiveToDate, IsProrationAllowed, IsRefundAllowed FROM ProductSurcharge WHERE RuleApiName != null';
     if (surchargeIds) {
       const idList = surchargeIds
         .split(',')

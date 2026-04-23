@@ -35,6 +35,12 @@ type UnderwritingRuleRecord = RuleRecord & {
   Status: string | null;
   Sequence: number | null;
   RuleKey: string | null;
+  Description: string | null;
+  EffectiveFromDate: string | null;
+  EffectiveToDate: string | null;
+  EvaluationSuccessTaskGroup: string | null;
+  EvaluationFailureTaskGroup: string | null;
+  UnderwritingRuleGroupId: string | null;
 };
 
 export type CmlConvertUnderwritingRulesResult = {
@@ -96,6 +102,25 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
     const ruleDefs = this.parseRuleDefinitions(records);
     const productIdToCode = await this.resolveProductCodes(ruleDefs, targetOrg, flags);
     const { cmlModel, ruleKeyMapping } = buildCmlModel(ruleDefs, productIdToCode, 'UW', 'Underwriting eligibility');
+
+    const recordById = new Map(records.map((r) => [r.Id, r]));
+    for (const entry of ruleKeyMapping) {
+      const rec = recordById.get(entry.recordId);
+      if (rec) {
+        entry.metadata = {
+          status: rec.Status,
+          description: rec.Description,
+          sequence: rec.Sequence,
+          effectiveFromDate: rec.EffectiveFromDate,
+          effectiveToDate: rec.EffectiveToDate,
+          evaluationSuccessTaskGroup: rec.EvaluationSuccessTaskGroup,
+          evaluationFailureTaskGroup: rec.EvaluationFailureTaskGroup,
+          underwritingRuleGroupId: rec.UnderwritingRuleGroupId,
+          productPath: rec.ProductPath,
+          apiName: rec.ApiName,
+        };
+      }
+    }
     ruleKeyMapping.forEach((m) => this.log(`  -> ${m.name} => ${m.ruleKey}`));
 
     const result = await this.writeOutputFiles(cmlModel, ruleKeyMapping, safeApi, workspaceDir, api);
@@ -124,7 +149,7 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
     const conn = targetOrg.getConnection(flags['api-version'] as string | undefined);
     const uwIds = flags['uw-ids'] as string | undefined;
     let soql =
-      'SELECT Id, Name, ApiName, DynamicRuleDefinition, ProductPath, Status, Sequence, RuleKey FROM UnderwritingRule WHERE DynamicRuleDefinition != null';
+      'SELECT Id, Name, ApiName, DynamicRuleDefinition, ProductPath, Status, Sequence, RuleKey, Description, EffectiveFromDate, EffectiveToDate, EvaluationSuccessTaskGroup, EvaluationFailureTaskGroup, UnderwritingRuleGroupId FROM UnderwritingRule WHERE DynamicRuleDefinition != null';
     if (uwIds) {
       const idList = uwIds
         .split(',')
