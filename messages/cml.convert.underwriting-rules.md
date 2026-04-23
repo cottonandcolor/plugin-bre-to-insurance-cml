@@ -36,3 +36,7 @@ Comma-separated list of UnderwritingRule record IDs to convert. If omitted, all 
 # flags.auto-update.summary
 
 Automatically update UnderwritingRule records in the org with RuleEngineType=ConstraintEngine and the generated RuleKey.
+
+# flags.uw-merge.summary
+
+Path to an existing .cml file. New underwriting constraints will be merged into it, preserving existing attributes and constraints.

@@ -18,6 +18,7 @@ import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
 import { Messages, Connection } from '@salesforce/core';
 import { CmlModel } from '../../../shared/types/types.js';
 import { generateCsvForAssociations } from '../../../shared/utils/association.utils.js';
+import { parseCmlFile, mergeCmlModels } from '../../../shared/cml-parser.js';
 import {
   ParsedRuleDefinition,
   RuleRecord,
@@ -82,6 +83,11 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
       char: 'u',
       default: false,
     }),
+    merge: Flags.file({
+      summary: messages.getMessage('flags.uw-merge.summary'),
+      char: 'm',
+      exists: true,
+    }),
   };
 
   public async run(): Promise<CmlConvertUnderwritingRulesResult> {
@@ -101,7 +107,16 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
 
     const ruleDefs = this.parseRuleDefinitions(records);
     const productIdToCode = await this.resolveProductCodes(ruleDefs, targetOrg, flags);
-    const { cmlModel, ruleKeyMapping } = buildCmlModel(ruleDefs, productIdToCode, 'UW', 'Underwriting eligibility');
+    let { cmlModel, ruleKeyMapping } = buildCmlModel(ruleDefs, productIdToCode, 'UW', 'Underwriting eligibility');
+
+    const mergeFile = flags['merge'] as string | undefined;
+    if (mergeFile) {
+      this.log(`Merging into existing CML file: ${mergeFile}`);
+      const existingCml = await fs.readFile(mergeFile, 'utf8');
+      const existingModel = parseCmlFile(existingCml);
+      cmlModel = mergeCmlModels(existingModel, cmlModel);
+      this.log('Merge complete — existing constraints preserved, new underwriting constraints appended');
+    }
 
     const recordById = new Map(records.map((r) => [r.Id, r]));
     for (const entry of ruleKeyMapping) {

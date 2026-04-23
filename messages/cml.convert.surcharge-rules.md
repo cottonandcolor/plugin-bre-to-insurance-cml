@@ -36,3 +36,7 @@ Comma-separated list of ProductSurcharge record IDs to convert. If omitted, all 
 # flags.auto-update.summary
 
 Automatically update ProductSurcharge records in the org with RuleEngineType=ConstraintEngine and the generated RuleKey.
+
+# flags.merge.summary
+
+Path to an existing .cml file. New surcharge constraints will be merged into it, preserving existing attributes and constraints.
