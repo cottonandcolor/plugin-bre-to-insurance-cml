@@ -1,0 +1,44 @@
+[
+  {
+    "alias": [],
+    "command": "cml:convert:prod-cfg-rules",
+    "flagAliases": [],
+    "flagChars": ["c", "d", "o", "r", "v", "x"],
+    "flags": [
+      "additional-products",
+      "api-version",
+      "cml-api",
+      "flags-dir",
+      "json",
+      "pcr-file",
+      "products-file",
+      "target-org",
+      "workspace-dir"
+    ],
+    "plugin": "@salesforce/plugin-bre-to-cml"
+  },
+  {
+    "alias": [],
+    "command": "cml:convert:surcharge-rules",
+    "flagAliases": [],
+    "flagChars": ["c", "d", "f", "o"],
+    "flags": ["api-version", "cml-api", "flags-dir", "json", "surcharge-file", "target-org", "workspace-dir"],
+    "plugin": "@salesforce/plugin-bre-to-cml"
+  },
+  {
+    "alias": [],
+    "command": "cml:convert:underwriting-rules",
+    "flagAliases": [],
+    "flagChars": ["c", "d", "f", "o"],
+    "flags": ["api-version", "cml-api", "flags-dir", "json", "target-org", "uw-file", "workspace-dir"],
+    "plugin": "@salesforce/plugin-bre-to-cml"
+  },
+  {
+    "alias": [],
+    "command": "cml:import:as-expression-set",
+    "flagAliases": [],
+    "flagChars": ["c", "d", "o", "x"],
+    "flags": ["api-version", "cml-api", "context-definition", "flags-dir", "json", "target-org", "workspace-dir"],
+    "plugin": "@salesforce/plugin-bre-to-cml"
+  }
+]
