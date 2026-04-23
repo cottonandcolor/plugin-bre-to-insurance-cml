@@ -19,6 +19,7 @@ import { Messages, Connection } from '@salesforce/core';
 import { CmlModel } from '../../../shared/types/types.js';
 import { generateCsvForAssociations } from '../../../shared/utils/association.utils.js';
 import { parseCmlFile, mergeCmlModels } from '../../../shared/cml-parser.js';
+import { fetchExistingCmlForProducts } from '../../../shared/cml-org-fetcher.js';
 import {
   ParsedRuleDefinition,
   RuleRecord,
@@ -86,6 +87,10 @@ export default class CmlConvertSurchargeRules extends SfCommand<CmlConvertSurcha
       char: 'm',
       exists: true,
     }),
+    'merge-from-org': Flags.boolean({
+      summary: messages.getMessage('flags.merge-from-org.summary'),
+      default: false,
+    }),
   };
 
   public async run(): Promise<CmlConvertSurchargeRulesResult> {
@@ -108,12 +113,28 @@ export default class CmlConvertSurchargeRules extends SfCommand<CmlConvertSurcha
     let { cmlModel, ruleKeyMapping } = buildCmlModel(ruleDefs, productIdToCode, 'SC', 'Surcharge eligibility');
 
     const mergeFile = flags['merge'] as string | undefined;
+    const mergeFromOrg = flags['merge-from-org'] as boolean;
     if (mergeFile) {
       this.log(`Merging into existing CML file: ${mergeFile}`);
       const existingCml = await fs.readFile(mergeFile, 'utf8');
       const existingModel = parseCmlFile(existingCml);
       cmlModel = mergeCmlModels(existingModel, cmlModel);
       this.log('Merge complete — existing constraints preserved, new surcharge constraints appended');
+    } else if (mergeFromOrg) {
+      const conn = targetOrg.getConnection(flags['api-version'] as string | undefined);
+      const rootProductIds = new Set(records.map((r) => r.ProductPath.split('/')[0]));
+      this.log(`Looking up existing CML from org for ${rootProductIds.size} product(s)...`);
+      const productToCml = await fetchExistingCmlForProducts(conn, rootProductIds);
+      for (const [productId, existingCml] of productToCml) {
+        this.log(`  Found existing CML for product ${productId} — merging`);
+        const existingModel = parseCmlFile(existingCml);
+        cmlModel = mergeCmlModels(existingModel, cmlModel);
+      }
+      if (productToCml.size > 0) {
+        this.log('Merge complete — existing constraints preserved, new surcharge constraints appended');
+      } else {
+        this.log('No existing CML found in org — generating new file');
+      }
     }
 
     const recordById = new Map(records.map((r) => [r.Id, r]));

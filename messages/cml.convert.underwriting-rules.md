@@ -40,3 +40,7 @@ Automatically update UnderwritingRule records in the org with RuleEngineType=Con
 # flags.uw-merge.summary
 
 Path to an existing .cml file. New underwriting constraints will be merged into it, preserving existing attributes and constraints.
+
+# flags.uw-merge-from-org.summary
+
+Automatically fetch the existing CML constraint model from the org (via ExpressionSetConstraintObj → ExpressionSetDefinitionVersion) for each product and merge new underwriting constraints into it.
