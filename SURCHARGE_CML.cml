@@ -1,0 +1,203 @@
+type AutoSilver;
+
+type AutoClass {
+    int Year;
+
+}
+
+type Auto;
+
+type FamilyHealthInsurance;
+
+type PrimaryMember;
+
+type Member {
+    string First_Name;
+
+    string Last_Name;
+
+    int Age;
+
+    string E_Mail;
+
+    string State;
+
+    string Marital_Status;
+
+    string Gender;
+
+}
+
+type CriticalIllnessSurgery {
+    int Out_Network_Diagnostic_lab_test_copay;
+
+    int Out_Network_Deductible_Limit;
+
+    int Out_Network_Limit;
+
+    int Out_Network_coinsurance;
+
+    int Out_Network_Annual_Out_of_Pocket_Limit;
+
+    int Out_Network_Doctor_visit_copay;
+
+    int Deductible_Limit;
+
+    int Annual_Out_of_Pocket_Limit;
+
+    string ICU_Fees;
+
+    string Room_Rent_limit;
+
+    int Doctor_visit_copay;
+
+    int Number_of_days_covered;
+
+}
+
+type ChronicDisease {
+    int Out_Network_Diagnostic_lab_test_copay;
+
+    int Out_Network_Deductible_Limit;
+
+    int Out_Network_Limit;
+
+    int Out_Network_coinsurance;
+
+    int Out_Network_Annual_Out_of_Pocket_Limit;
+
+    string Out_Network_Room_Rent_limit;
+
+    string Out_Network_ICU_Fees;
+
+    int Out_Network_Number_of_days_covered;
+
+    int Out_Network_Doctor_visit_copay;
+
+    int Deductible_Limit;
+
+    int Annual_Out_of_Pocket_Limit;
+
+    string ICU_Fees;
+
+    string Room_Rent_limit;
+
+    int Diagnostic_lab_test_copay;
+
+    int coinsurance;
+
+    int Medical_Limit;
+
+    int Doctor_visit_copay;
+
+    int Number_of_days_covered;
+
+}
+
+type PreventiveCareWellness {
+    int Out_Network_Diagnostic_lab_test_copay;
+
+    int Out_Network_Deductible_Limit;
+
+    int Out_Network_Limit;
+
+    int Out_Network_coinsurance;
+
+    int Out_Network_Annual_Out_of_Pocket_Limit;
+
+    string Out_Network_Room_Rent_limit;
+
+    string Out_Network_ICU_Fees;
+
+    int Out_Network_Number_of_days_covered;
+
+    int Out_Network_Doctor_visit_copay;
+
+    int Out_Network_Copay;
+
+    int Deductible_Limit;
+
+    int Annual_Out_of_Pocket_Limit;
+
+    string ICU_Fees;
+
+    string Room_Rent_limit;
+
+    int Diagnostic_lab_test_copay;
+
+    int coinsurance;
+
+    int Medical_Limit;
+
+    int Doctor_visit_copay;
+
+    int Number_of_days_covered;
+
+}
+
+type OutPatient {
+    int Out_Network_Diagnostic_lab_test_copay;
+
+    int Out_Network_Deductible_Limit;
+
+    int Out_Network_Limit;
+
+    int Out_Network_coinsurance;
+
+    int Out_Network_Annual_Out_of_Pocket_Limit;
+
+    string Out_Network_Room_Rent_limit;
+
+    string Out_Network_ICU_Fees;
+
+    int Out_Network_Number_of_days_covered;
+
+    int Out_Network_Doctor_visit_copay;
+
+    int Out_Network_Copay;
+
+    int Deductible_Limit;
+
+    int Annual_Out_of_Pocket_Limit;
+
+    string ICU_Fees;
+
+    string Room_Rent_limit;
+
+    int Diagnostic_lab_test_copay;
+
+    int coinsurance;
+
+    int Medical_Limit;
+
+    int Doctor_visit_copay;
+
+    int Number_of_days_covered;
+
+}
+
+type DependentMember;
+
+type LineItem {
+    string product_id;
+
+    string Deductible;
+
+    string Colour;
+
+    string UserProfile;
+
+    constraint SC__01tSB000004V4KKYA0__Comprehensive_CA_taxes = ((product.id == "01tSB000004V4KeYAK" && Deductible == "$100") || (product.id == "01tSB000004V4KLYA0"), "Surcharge eligibility: Comprehensive_CA_taxes");
+
+    constraint SC__01tSB000004V4KKYA0__Collision_Collision_tax = (product.id == "01tSB000004V4KdYAK" && Deductible == "$100", "Surcharge eligibility: Collision_Collision tax");
+
+    constraint SC__01tSB000004V4KKYA0__Auto_CA_Electric_Vehicle_Tax = (product.id == "01tSB000004V4KLYA0", "Surcharge eligibility: Auto_CA Electric Vehicle Tax");
+
+    constraint SC__01tSB000004V4KKYA0__Auto_WA_Tax = (product.id == "01tSB000004V4KLYA0" && Colour == "Red", "Surcharge eligibility: Auto_WA_Tax");
+
+    constraint SC__comprehensiveHealthPlan__Family_comprehensive_WA_Tax = (product.id == "01tSB000004V4KNYA0", "Surcharge eligibility: Family comprehensive WA Tax");
+
+    constraint SC__autoSilver__AutoSilver_CleanAirTax = (product.id == "01tSB000004V4KKYA0" && UserProfile == "System Administrator", "Surcharge eligibility: AutoSilver_CleanAirTax");
+
+}
+

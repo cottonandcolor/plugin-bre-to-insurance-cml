@@ -16,10 +16,9 @@
 import * as fs from 'node:fs/promises';
 import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
 import { Messages, Connection } from '@salesforce/core';
-import { CmlModel } from '../../../shared/types/types.js';
 import { generateCsvForAssociations } from '../../../shared/utils/association.utils.js';
 import { parseCmlFile, mergeCmlModels } from '../../../shared/cml-parser.js';
-import { fetchExistingCmlForProducts } from '../../../shared/cml-org-fetcher.js';
+import { fetchExistingCmlFromOrg } from '../../../shared/cml-org-fetcher.js';
 import {
   ParsedRuleDefinition,
   RuleRecord,
@@ -43,9 +42,16 @@ type ProductSurchargeRecord = RuleRecord & {
   RuleEngineType: string | null;
 };
 
-export type CmlConvertSurchargeRulesResult = {
+type PerProductOutput = {
+  productCode: string;
   cmlFile: string;
   associationsFile: string;
+  mappingFile: string;
+  ruleCount: number;
+};
+
+export type CmlConvertSurchargeRulesResult = {
+  outputs: PerProductOutput[];
   ruleKeyMapping: RuleKeyEntry[];
   updatedRecords: number;
 };
@@ -82,11 +88,6 @@ export default class CmlConvertSurchargeRules extends SfCommand<CmlConvertSurcha
       char: 'u',
       default: false,
     }),
-    merge: Flags.file({
-      summary: messages.getMessage('flags.merge.summary'),
-      char: 'm',
-      exists: true,
-    }),
     'merge-from-org': Flags.boolean({
       summary: messages.getMessage('flags.merge-from-org.summary'),
       default: false,
@@ -96,74 +97,115 @@ export default class CmlConvertSurchargeRules extends SfCommand<CmlConvertSurcha
   public async run(): Promise<CmlConvertSurchargeRulesResult> {
     const { flags } = await this.parse(CmlConvertSurchargeRules);
 
-    const api = flags['cml-api'];
     const workspaceDir = flags['workspace-dir'] ?? '.';
     const targetOrg = flags['target-org'];
-    const safeApi = api.replace(/[^a-zA-Z0-9_-]/g, '_');
     const autoUpdate = flags['auto-update'];
+    const mergeFromOrg = flags['merge-from-org'] as boolean;
 
     const records = await this.loadRecords(flags, targetOrg);
     if (records.length === 0) {
       this.log('No surcharge rules to convert.');
-      return { cmlFile: '', associationsFile: '', ruleKeyMapping: [], updatedRecords: 0 };
+      return { outputs: [], ruleKeyMapping: [], updatedRecords: 0 };
     }
 
     const ruleDefs = this.parseRuleDefinitions(records);
     const productIdToCode = await this.resolveProductCodes(ruleDefs, targetOrg, flags);
-    let { cmlModel, ruleKeyMapping } = buildCmlModel(ruleDefs, productIdToCode, 'SC', 'Surcharge eligibility');
 
-    const mergeFile = flags['merge'] as string | undefined;
-    const mergeFromOrg = flags['merge-from-org'] as boolean;
-    if (mergeFile) {
-      this.log(`Merging into existing CML file: ${mergeFile}`);
-      const existingCml = await fs.readFile(mergeFile, 'utf8');
-      const existingModel = parseCmlFile(existingCml);
-      cmlModel = mergeCmlModels(existingModel, cmlModel);
-      this.log('Merge complete — existing constraints preserved, new surcharge constraints appended');
-    } else if (mergeFromOrg) {
-      const conn = targetOrg.getConnection(flags['api-version'] as string | undefined);
-      const rootProductIds = new Set(records.map((r) => r.ProductPath.split('/')[0]));
-      this.log(`Looking up existing CML from org for ${rootProductIds.size} product(s)...`);
-      const productToCml = await fetchExistingCmlForProducts(conn, rootProductIds);
-      for (const [productId, existingCml] of productToCml) {
-        this.log(`  Found existing CML for product ${productId} — merging`);
-        const existingModel = parseCmlFile(existingCml);
-        cmlModel = mergeCmlModels(existingModel, cmlModel);
+    // Group ruleDefs by root product ID
+    const groupedByProduct = new Map<string, Array<{ record: RuleRecord; ruleDef: ParsedRuleDefinition }>>();
+    for (const rd of ruleDefs) {
+      const rootId = rd.record.ProductPath.split('/')[0];
+      if (!groupedByProduct.has(rootId)) {
+        groupedByProduct.set(rootId, []);
       }
-      if (productToCml.size > 0) {
-        this.log('Merge complete — existing constraints preserved, new surcharge constraints appended');
-      } else {
-        this.log('No existing CML found in org — generating new file');
-      }
+      groupedByProduct.get(rootId)!.push(rd);
     }
 
-    const recordById = new Map(records.map((r) => [r.Id, r]));
-    for (const entry of ruleKeyMapping) {
-      const rec = recordById.get(entry.recordId);
-      if (rec) {
-        entry.metadata = {
-          sequenceNumber: rec.SequenceNumber,
-          effectiveFromDate: rec.EffectiveFromDate,
-          effectiveToDate: rec.EffectiveToDate,
-          isProrationAllowed: rec.IsProrationAllowed,
-          isRefundAllowed: rec.IsRefundAllowed,
-          isActive: rec.IsActive,
-          ruleEngineType: rec.RuleEngineType,
-          productPath: rec.ProductPath,
-        };
-      }
-    }
-    ruleKeyMapping.forEach((m) => this.log(`  -> ${m.name} => ${m.ruleKey}`));
+    this.log(`\nGrouped into ${groupedByProduct.size} product(s):`);
 
-    const result = await this.writeOutputFiles(cmlModel, ruleKeyMapping, safeApi, workspaceDir, api);
+    const allRuleKeyMapping: RuleKeyEntry[] = [];
+    const outputs: PerProductOutput[] = [];
+    const conn = targetOrg.getConnection(flags['api-version'] as string | undefined);
+
+    for (const [rootProductId, productRuleDefs] of groupedByProduct) {
+      const productCode = productIdToCode.get(rootProductId) ?? rootProductId;
+      const safeProductCode = productCode.replace(/[^a-zA-Z0-9_-]/g, '_');
+      this.log(`\n--- ${productCode} (${productRuleDefs.length} rules) ---`);
+
+      let { cmlModel, ruleKeyMapping } = buildCmlModel(productRuleDefs, productIdToCode, 'SC', 'Surcharge eligibility');
+
+      if (mergeFromOrg) {
+        this.log(`  Looking up existing CML from org for product ${rootProductId}...`);
+        const existing = await fetchExistingCmlFromOrg(conn, rootProductId);
+        if (existing) {
+          this.log(`  Found existing CML — merging`);
+          const existingModel = parseCmlFile(existing.cml);
+          cmlModel = mergeCmlModels(existingModel, cmlModel);
+        } else {
+          this.log(`  No existing CML found — generating new`);
+        }
+      }
+
+      // Enrich mapping with metadata
+      const recordById = new Map(records.map((r) => [r.Id, r]));
+      for (const entry of ruleKeyMapping) {
+        const rec = recordById.get(entry.recordId);
+        if (rec) {
+          entry.metadata = {
+            sequenceNumber: rec.SequenceNumber,
+            effectiveFromDate: rec.EffectiveFromDate,
+            effectiveToDate: rec.EffectiveToDate,
+            isProrationAllowed: rec.IsProrationAllowed,
+            isRefundAllowed: rec.IsRefundAllowed,
+            isActive: rec.IsActive,
+            ruleEngineType: rec.RuleEngineType,
+            productPath: rec.ProductPath,
+          };
+        }
+      }
+
+      ruleKeyMapping.forEach((m) => this.log(`  -> ${m.name} => ${m.ruleKey}`));
+
+      // Write per-product files
+      const cmlPath = `${workspaceDir}/${safeProductCode}.cml`;
+      const associationsPath = `${workspaceDir}/${safeProductCode}_Associations.csv`;
+      const mappingPath = `${workspaceDir}/${safeProductCode}_RuleKeyMapping.json`;
+
+      await fs.writeFile(cmlPath, cmlModel.generateCml(), 'utf8');
+      await fs.writeFile(associationsPath, generateCsvForAssociations(safeProductCode, cmlModel.associations), 'utf8');
+      await fs.writeFile(mappingPath, JSON.stringify(ruleKeyMapping, null, 2), 'utf8');
+
+      this.log(`  CML: ${cmlPath}`);
+      this.log(`  Associations: ${associationsPath}`);
+      this.log(`  Mapping: ${mappingPath}`);
+
+      outputs.push({
+        productCode,
+        cmlFile: cmlPath,
+        associationsFile: associationsPath,
+        mappingFile: mappingPath,
+        ruleCount: ruleKeyMapping.length,
+      });
+      allRuleKeyMapping.push(...ruleKeyMapping);
+    }
+
+    this.log(`\nConverted ${allRuleKeyMapping.length} rules across ${outputs.length} product(s)`);
 
     let updatedRecords = 0;
     if (autoUpdate) {
-      const conn = targetOrg.getConnection(flags['api-version'] as string | undefined);
-      updatedRecords = await this.updateRecordsInOrg(conn, ruleKeyMapping);
+      this.log('\nUpdating ProductSurcharge records with RuleEngineType and RuleKey...');
+      updatedRecords = await this.updateRecordsInOrg(conn, allRuleKeyMapping);
     }
 
-    return { ...result, updatedRecords };
+    this.log('\nNext steps:');
+    this.log('  1. Review the generated .cml files');
+    for (const output of outputs) {
+      this.log(
+        `  2. Import ${output.productCode}: sf cml import as-expression-set --cml-api ${output.productCode} --context-definition <CD_NAME> --target-org <org>`
+      );
+    }
+
+    return { outputs, ruleKeyMapping: allRuleKeyMapping, updatedRecords };
   }
 
   private async loadRecords(
@@ -241,7 +283,6 @@ export default class CmlConvertSurchargeRules extends SfCommand<CmlConvertSurcha
   }
 
   private async updateRecordsInOrg(conn: Connection, ruleKeyMapping: RuleKeyEntry[]): Promise<number> {
-    this.log('\nUpdating ProductSurcharge records with RuleEngineType and RuleKey...');
     const updates = ruleKeyMapping.map((m) => ({
       Id: m.recordId,
       RuleEngineType: 'ConstraintEngine',
@@ -262,36 +303,5 @@ export default class CmlConvertSurchargeRules extends SfCommand<CmlConvertSurcha
     }
     this.log(`Updated ${successCount}/${ruleKeyMapping.length} ProductSurcharge records`);
     return successCount;
-  }
-
-  private async writeOutputFiles(
-    cmlModel: CmlModel,
-    ruleKeyMapping: RuleKeyEntry[],
-    safeApi: string,
-    workspaceDir: string,
-    api: string
-  ): Promise<Omit<CmlConvertSurchargeRulesResult, 'updatedRecords'>> {
-    const cmlPath = `${workspaceDir}/${safeApi}.cml`;
-    const associationsPath = `${workspaceDir}/${safeApi}_Associations.csv`;
-    const mappingPath = `${workspaceDir}/${safeApi}_RuleKeyMapping.json`;
-
-    await fs.writeFile(cmlPath, cmlModel.generateCml(), 'utf8');
-    await fs.writeFile(associationsPath, generateCsvForAssociations(safeApi, cmlModel.associations), 'utf8');
-    await fs.writeFile(mappingPath, JSON.stringify(ruleKeyMapping, null, 2), 'utf8');
-
-    this.log(`\nCML written to: ${cmlPath}`);
-    this.log(`Associations written to: ${associationsPath}`);
-    this.log(`Rule key mapping written to: ${mappingPath}`);
-    this.log(`\nConverted ${ruleKeyMapping.length} rules to CML`);
-    this.log('\nNext steps:');
-    this.log('  1. Review the generated .cml file');
-    this.log(
-      `  2. Import: sf cml import as-expression-set --cml-api ${api} --context-definition <CD_NAME> --target-org <org>`
-    );
-    if (ruleKeyMapping.length > 0) {
-      this.log('  3. Records updated with RuleEngineType=ConstraintEngine and RuleKey (if --auto-update was used)');
-    }
-
-    return { cmlFile: cmlPath, associationsFile: associationsPath, ruleKeyMapping };
   }
 }

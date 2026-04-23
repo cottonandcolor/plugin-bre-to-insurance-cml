@@ -176,7 +176,7 @@
       "output": []
     },
     "test:command-reference": {
-      "command": "\"./bin/dev\" commandreference:generate --erroronwarnings",
+      "command": "node --loader ts-node/esm --no-warnings=ExperimentalWarning \"./bin/dev.js\" commandreference:generate --erroronwarnings",
       "files": [
         "src/**/*.ts",
         "messages/**",
@@ -187,7 +187,7 @@
       ]
     },
     "test:deprecation-policy": {
-      "command": "\"./bin/dev\" snapshot:compare",
+      "command": "node --loader ts-node/esm --no-warnings=ExperimentalWarning \"./bin/dev.js\" snapshot:compare",
       "files": [
         "src/**/*.ts"
       ],
@@ -197,7 +197,7 @@
       ]
     },
     "test:json-schema": {
-      "command": "\"./bin/dev\" schema:compare",
+      "command": "node --loader ts-node/esm --no-warnings=ExperimentalWarning \"./bin/dev.js\" schema:compare",
       "files": [
         "src/**/*.ts",
         "schemas"

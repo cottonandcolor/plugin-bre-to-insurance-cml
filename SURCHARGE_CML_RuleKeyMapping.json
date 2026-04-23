@@ -1,0 +1,92 @@
+[
+  {
+    "recordId": "1Xrxx0000000001CAA",
+    "name": "Comprehensive_CA_taxes",
+    "ruleKey": "SC__01tSB000004V4KKYA0__Comprehensive_CA_taxes",
+    "metadata": {
+      "sequenceNumber": null,
+      "effectiveFromDate": "2025-01-01",
+      "effectiveToDate": "2026-12-31",
+      "isProrationAllowed": true,
+      "isRefundAllowed": false,
+      "isActive": true,
+      "ruleEngineType": null,
+      "productPath": "01tSB000004V4KKYA0/01tSB000004V4KLYA0/01tSB000004V4KeYAK"
+    }
+  },
+  {
+    "recordId": "1Xrxx0000000002CAA",
+    "name": "Collision_Collision tax",
+    "ruleKey": "SC__01tSB000004V4KKYA0__Collision_Collision_tax",
+    "metadata": {
+      "sequenceNumber": null,
+      "effectiveFromDate": "2025-01-01",
+      "effectiveToDate": null,
+      "isProrationAllowed": true,
+      "isRefundAllowed": false,
+      "isActive": true,
+      "ruleEngineType": null,
+      "productPath": "01tSB000004V4KKYA0/01tSB000004V4KLYA0/01tSB000004V4KdYAK"
+    }
+  },
+  {
+    "recordId": "1Xrxx0000000003CAA",
+    "name": "Auto_CA Electric Vehicle Tax",
+    "ruleKey": "SC__01tSB000004V4KKYA0__Auto_CA_Electric_Vehicle_Tax",
+    "metadata": {
+      "sequenceNumber": null,
+      "effectiveFromDate": "2025-01-01",
+      "effectiveToDate": null,
+      "isProrationAllowed": false,
+      "isRefundAllowed": false,
+      "isActive": true,
+      "ruleEngineType": null,
+      "productPath": "01tSB000004V4KKYA0/01tSB000004V4KLYA0"
+    }
+  },
+  {
+    "recordId": "1Xrxx0000000004CAA",
+    "name": "Auto_WA_Tax",
+    "ruleKey": "SC__01tSB000004V4KKYA0__Auto_WA_Tax",
+    "metadata": {
+      "sequenceNumber": null,
+      "effectiveFromDate": "2025-01-01",
+      "effectiveToDate": null,
+      "isProrationAllowed": true,
+      "isRefundAllowed": false,
+      "isActive": true,
+      "ruleEngineType": null,
+      "productPath": "01tSB000004V4KKYA0/01tSB000004V4KLYA0"
+    }
+  },
+  {
+    "recordId": "1Xrxx0000000005CAA",
+    "name": "Family comprehensive WA Tax",
+    "ruleKey": "SC__comprehensiveHealthPlan__Family_comprehensive_WA_Tax",
+    "metadata": {
+      "sequenceNumber": null,
+      "effectiveFromDate": "2025-03-19",
+      "effectiveToDate": null,
+      "isProrationAllowed": false,
+      "isRefundAllowed": false,
+      "isActive": true,
+      "ruleEngineType": null,
+      "productPath": "01txx0000006i3FAAQ"
+    }
+  },
+  {
+    "recordId": "1Xrxx0000000006CAA",
+    "name": "AutoSilver_CleanAirTax",
+    "ruleKey": "SC__autoSilver__AutoSilver_CleanAirTax",
+    "metadata": {
+      "sequenceNumber": null,
+      "effectiveFromDate": "2025-01-01",
+      "effectiveToDate": null,
+      "isProrationAllowed": false,
+      "isRefundAllowed": false,
+      "isActive": true,
+      "ruleEngineType": null,
+      "productPath": "01txx0000006i3DAAQ"
+    }
+  }
+]
