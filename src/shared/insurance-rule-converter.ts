@@ -269,7 +269,7 @@ export function buildCmlModel(
       buildConstraintDeclaration(ruleDef),
       `"${constraintLabel}: ${record.Name}"`
     );
-    constraint.name = sanitizeName(apiName);
+    constraint.name = ruleKey;
     lineItemType.addConstraint(constraint);
 
     cmlModel.addAssociation(
