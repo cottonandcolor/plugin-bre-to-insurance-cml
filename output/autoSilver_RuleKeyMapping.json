@@ -1,20 +1,5 @@
 [
   {
-    "recordId": "1Xrxx0000000006CAA",
-    "name": "AutoSilver_CleanAirTax",
-    "ruleKey": "SC__autoSilver__AutoSilver_CleanAirTax",
-    "metadata": {
-      "sequenceNumber": null,
-      "effectiveFromDate": "2025-01-01",
-      "effectiveToDate": null,
-      "isProrationAllowed": false,
-      "isRefundAllowed": false,
-      "isActive": true,
-      "ruleEngineType": null,
-      "productPath": "01txx0000006i3DAAQ"
-    }
-  },
-  {
     "recordId": "1Xrxx00000000jBCAQ",
     "name": "BRE_Tax_AutoSilver_WA",
     "ruleKey": "SC__autoSilver__BRE_Tax_AutoSilver_WA",

@@ -227,7 +227,7 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
     const conn = targetOrg.getConnection(flags['api-version'] as string | undefined);
     const uwIds = flags['uw-ids'] as string | undefined;
     let soql =
-      'SELECT Id, Name, ApiName, DynamicRuleDefinition, ProductPath, Status, Sequence, RuleKey, Description, EffectiveFromDateTime, EffectiveToDateTime, EvaluationSuccessTaskGroupId, EvaluationFailureTaskGroupId, UnderwritingRuleGroupId FROM UnderwritingRule WHERE DynamicRuleDefinition != null';
+      'SELECT Id, Name, ApiName, DynamicRuleDefinition, ProductPath, Status, Sequence, RuleKey, Description, EffectiveFromDateTime, EffectiveToDateTime, EvaluationSuccessTaskGroupId, EvaluationFailureTaskGroupId, UnderwritingRuleGroupId FROM UnderwritingRule WHERE ApiName != null';
     if (uwIds) {
       const idList = uwIds
         .split(',')

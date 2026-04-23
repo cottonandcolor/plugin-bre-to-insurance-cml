@@ -172,7 +172,7 @@ type DependentMember;
 type LineItem {
     string product_id;
 
-    constraint SC__comprehensiveHealthPlan__Family_comprehensive_WA_Tax = (product.id == "01tSB000004V4KNYA0", "Surcharge eligibility: Family comprehensive WA Tax");
+    rule(product.id == "01tSB000004V4KNYA0", "InsuranceSurchargeRule", "SC__comprehensiveHealthPlan__Family_comprehensive_WA_Tax", "True");
 
 }
 

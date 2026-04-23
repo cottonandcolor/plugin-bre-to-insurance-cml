@@ -5,13 +5,13 @@ type LineItem {
 
     string Colour;
 
-    constraint SC__01tSB000004V4KKYA0__Comprehensive_CA_taxes = ((product.id == "01tSB000004V4KeYAK" && Deductible == "$100") || (product.id == "01tSB000004V4KLYA0"), "Surcharge eligibility: Comprehensive_CA_taxes");
+    rule((product.id == "01tSB000004V4KeYAK" && Deductible == "$100") || (product.id == "01tSB000004V4KLYA0"), "InsuranceSurchargeRule", "SC__01tSB000004V4KKYA0__Comprehensive_CA_taxes", "True");
 
-    constraint SC__01tSB000004V4KKYA0__Collision_Collision_tax = (product.id == "01tSB000004V4KdYAK" && Deductible == "$100", "Surcharge eligibility: Collision_Collision tax");
+    rule(product.id == "01tSB000004V4KdYAK" && Deductible == "$100", "InsuranceSurchargeRule", "SC__01tSB000004V4KKYA0__Collision_Collision_tax", "True");
 
-    constraint SC__01tSB000004V4KKYA0__Auto_CA_Electric_Vehicle_Tax = (product.id == "01tSB000004V4KLYA0", "Surcharge eligibility: Auto_CA Electric Vehicle Tax");
+    rule(product.id == "01tSB000004V4KLYA0", "InsuranceSurchargeRule", "SC__01tSB000004V4KKYA0__Auto_CA_Electric_Vehicle_Tax", "True");
 
-    constraint SC__01tSB000004V4KKYA0__Auto_WA_Tax = (product.id == "01tSB000004V4KLYA0" && Colour == "Red", "Surcharge eligibility: Auto_WA_Tax");
+    rule(product.id == "01tSB000004V4KLYA0" && Colour == "Red", "InsuranceSurchargeRule", "SC__01tSB000004V4KKYA0__Auto_WA_Tax", "True");
 
 }
 

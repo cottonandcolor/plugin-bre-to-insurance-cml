@@ -16,8 +16,6 @@ type LineItem {
 
     string UserProfile;
 
-    rule(product.id == "01txx0000006i3DAAQ", "InsuranceSurchargeRule", "SC__autoSilver__AutoSilver_CleanAirTax", "True");
-
     rule(product.id == "01txx0000006i3DAAQ" && Colour == "Red", "InsuranceSurchargeRule", "SC__autoSilver__BRE_Tax_AutoSilver_WA", "True");
 
     rule(product.id == "01txx0000006i3GAAQ", "InsuranceSurchargeRule", "SC__autoSilver__BRE_Tax_Auto_EV", "True");
