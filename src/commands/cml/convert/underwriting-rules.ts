@@ -294,24 +294,56 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
   }
 
   private async updateRecordsInOrg(conn: Connection, ruleKeyMapping: RuleKeyEntry[]): Promise<number> {
-    const updates = ruleKeyMapping.map((m) => ({
+    // Update UnderwritingRule records with RuleKey
+    const ruleUpdates = ruleKeyMapping.map((m) => ({
       Id: m.recordId,
       RuleKey: m.ruleKey,
     }));
 
-    const results = await conn.sobject('UnderwritingRule').update(updates);
-    const resultArray = Array.isArray(results) ? results : [results];
+    const ruleResults = await conn.sobject('UnderwritingRule').update(ruleUpdates);
+    const ruleResultArray = Array.isArray(ruleResults) ? ruleResults : [ruleResults];
     let successCount = 0;
-    for (const result of resultArray) {
+    for (const result of ruleResultArray) {
       if (result.success) {
         successCount++;
       } else {
         const id = 'id' in result ? result.id : 'unknown';
         const errors = 'errors' in result ? JSON.stringify(result.errors) : 'unknown error';
-        this.warn(`Failed to update ${id}: ${errors}`);
+        this.warn(`Failed to update UnderwritingRule ${id}: ${errors}`);
       }
     }
-    this.log(`Updated ${successCount}/${ruleKeyMapping.length} UnderwritingRule records`);
+    this.log(`Updated ${successCount}/${ruleKeyMapping.length} UnderwritingRule records with RuleKey`);
+
+    // Update parent UnderwritingRuleGroup records with RuleEngineType=ConstraintEngine
+    const groupIds = new Set<string>();
+    for (const entry of ruleKeyMapping) {
+      const groupId = entry.metadata?.underwritingRuleGroupId as string | undefined;
+      if (groupId) {
+        groupIds.add(groupId);
+      }
+    }
+
+    if (groupIds.size > 0) {
+      const groupUpdates = Array.from(groupIds).map((id) => ({
+        Id: id,
+        RuleEngineType: 'ConstraintEngine',
+      }));
+
+      const groupResults = await conn.sobject('UnderwritingRuleGroup').update(groupUpdates);
+      const groupResultArray = Array.isArray(groupResults) ? groupResults : [groupResults];
+      let groupSuccessCount = 0;
+      for (const result of groupResultArray) {
+        if (result.success) {
+          groupSuccessCount++;
+        } else {
+          const id = 'id' in result ? result.id : 'unknown';
+          const errors = 'errors' in result ? JSON.stringify(result.errors) : 'unknown error';
+          this.warn(`Failed to update UnderwritingRuleGroup ${id}: ${errors}`);
+        }
+      }
+      this.log(`Updated ${groupSuccessCount}/${groupIds.size} UnderwritingRuleGroup records with RuleEngineType=ConstraintEngine`);
+    }
+
     return successCount;
   }
 }
