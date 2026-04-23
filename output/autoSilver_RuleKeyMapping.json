@@ -1,62 +1,155 @@
 [
   {
-    "recordId": "1Xrxx00000000jBCAQ",
-    "name": "BRE_Tax_AutoSilver_WA",
-    "ruleKey": "SC__autoSilver__BRE_Tax_AutoSilver_WA",
+    "recordId": "1KXxx0000004CDsGAM",
+    "name": "E2E_UWRule_1776619064",
+    "ruleKey": "UW__autoSilver__E2E_UWRule_1776619064",
     "metadata": {
-      "sequenceNumber": null,
-      "effectiveFromDate": "2025-01-01",
-      "effectiveToDate": null,
-      "isProrationAllowed": true,
-      "isRefundAllowed": false,
-      "isActive": true,
-      "ruleEngineType": "BusinessRuleEngine",
-      "productPath": "01txx0000006i3DAAQ"
+      "status": "Draft",
+      "description": "E2E test underwriting rule created at 1776619064",
+      "sequence": 1,
+      "effectiveFromDateTime": "2025-09-01T00:00:00.000+0000",
+      "effectiveToDateTime": "2027-12-31T00:00:00.000+0000",
+      "evaluationSuccessTaskGroupId": "13oxx0000004CDsAAM",
+      "evaluationFailureTaskGroupId": "13oxx0000004CDtAAM",
+      "underwritingRuleGroupId": "1KQxx0000004CDsGAM",
+      "productPath": "01txx0000006i3DAAQ",
+      "apiName": "E2E_UWRule_1776619064"
     }
   },
   {
-    "recordId": "1Xrxx00000000jCCAQ",
-    "name": "BRE_Tax_Auto_EV",
-    "ruleKey": "SC__autoSilver__BRE_Tax_Auto_EV",
+    "recordId": "1KXxx0000004CFUGA2",
+    "name": "E2E_UWRule_1776619074",
+    "ruleKey": "UW__autoSilver__E2E_UWRule_1776619074",
     "metadata": {
-      "sequenceNumber": null,
-      "effectiveFromDate": "2025-01-01",
-      "effectiveToDate": null,
-      "isProrationAllowed": false,
-      "isRefundAllowed": false,
-      "isActive": true,
-      "ruleEngineType": "BusinessRuleEngine",
-      "productPath": "01txx0000006i3DAAQ/01txx0000006i3GAAQ"
+      "status": "Draft",
+      "description": "E2E test underwriting rule created at 1776619074",
+      "sequence": 2,
+      "effectiveFromDateTime": "2025-09-01T00:00:00.000+0000",
+      "effectiveToDateTime": "2027-12-31T00:00:00.000+0000",
+      "evaluationSuccessTaskGroupId": "13oxx0000004CFUAA2",
+      "evaluationFailureTaskGroupId": "13oxx0000004CFVAA2",
+      "underwritingRuleGroupId": "1KQxx0000004CDsGAM",
+      "productPath": "01txx0000006i3DAAQ",
+      "apiName": "E2E_UWRule_1776619074"
     }
   },
   {
-    "recordId": "1Xrxx00000000knCAA",
-    "name": "BRE_Fee_AutoSilver_Processing",
-    "ruleKey": "SC__autoSilver__BRE_Fee_AutoSilver_Processing",
+    "recordId": "1KXxx0000004CH6GAM",
+    "name": "E2E_UWRule_1776619088",
+    "ruleKey": "UW__autoSilver__E2E_UWRule_1776619088",
     "metadata": {
-      "sequenceNumber": null,
-      "effectiveFromDate": "2025-01-01",
-      "effectiveToDate": null,
-      "isProrationAllowed": false,
-      "isRefundAllowed": true,
-      "isActive": true,
-      "ruleEngineType": "BusinessRuleEngine",
-      "productPath": "01txx0000006i3DAAQ"
+      "status": "Draft",
+      "description": "E2E test underwriting rule created at 1776619088",
+      "sequence": 3,
+      "effectiveFromDateTime": "2025-09-01T00:00:00.000+0000",
+      "effectiveToDateTime": "2027-12-31T00:00:00.000+0000",
+      "evaluationSuccessTaskGroupId": "13oxx0000004CH6AAM",
+      "evaluationFailureTaskGroupId": "13oxx0000004CH7AAM",
+      "underwritingRuleGroupId": "1KQxx0000004CDsGAM",
+      "productPath": "01txx0000006i3DAAQ",
+      "apiName": "E2E_UWRule_1776619088"
     }
   },
   {
-    "recordId": "1Xrxx00000000koCAA",
-    "name": "BRE_Fee_AutoSilver_AdminFee",
-    "ruleKey": "SC__autoSilver__BRE_Fee_AutoSilver_AdminFee",
+    "recordId": "1KXxx0000004CIiGAM",
+    "name": "E2E_UWRule_Updated_1776619113",
+    "ruleKey": "UW__autoSilver__E2E_UWRule_1776619111",
     "metadata": {
-      "sequenceNumber": null,
-      "effectiveFromDate": "2025-01-01",
-      "effectiveToDate": null,
-      "isProrationAllowed": false,
-      "isRefundAllowed": false,
-      "isActive": true,
-      "ruleEngineType": "BusinessRuleEngine",
-      "productPath": "01txx0000006i3DAAQ"
+      "status": "Draft",
+      "description": "Updated by E2E test at 1776619113",
+      "sequence": 4,
+      "effectiveFromDateTime": "2025-09-01T00:00:00.000+0000",
+      "effectiveToDateTime": "2027-12-31T00:00:00.000+0000",
+      "evaluationSuccessTaskGroupId": "13oxx0000004CIiAAM",
+      "evaluationFailureTaskGroupId": "13oxx0000004CIjAAM",
+      "underwritingRuleGroupId": "1KQxx0000004CDsGAM",
+      "productPath": "01txx0000006i3DAAQ",
+      "apiName": "E2E_UWRule_1776619111"
+    }
+  },
+  {
+    "recordId": "1KXxx0000004CIjGAM",
+    "name": "E2E_UWRule_Updated_1776619184",
+    "ruleKey": "UW__autoSilver__E2E_UWRule_1776619183",
+    "metadata": {
+      "status": "Draft",
+      "description": "Updated by E2E test at 1776619184",
+      "sequence": 6,
+      "effectiveFromDateTime": "2025-09-01T00:00:00.000+0000",
+      "effectiveToDateTime": "2027-12-31T00:00:00.000+0000",
+      "evaluationSuccessTaskGroupId": "13oxx0000004CIkAAM",
+      "evaluationFailureTaskGroupId": "13oxx0000004CIlAAM",
+      "underwritingRuleGroupId": "1KQxx0000004CDsGAM",
+      "productPath": "01txx0000006i3DAAQ",
+      "apiName": "E2E_UWRule_1776619183"
+    }
+  },
+  {
+    "recordId": "1KXxx0000004CKKGA2",
+    "name": "E2E_UWRule_Updated_1776619133",
+    "ruleKey": "UW__autoSilver__E2E_UWRule_1776619132",
+    "metadata": {
+      "status": "Draft",
+      "description": "Updated by E2E test at 1776619133",
+      "sequence": 5,
+      "effectiveFromDateTime": "2025-09-01T00:00:00.000+0000",
+      "effectiveToDateTime": "2027-12-31T00:00:00.000+0000",
+      "evaluationSuccessTaskGroupId": "13oxx0000004CKKAA2",
+      "evaluationFailureTaskGroupId": "13oxx0000004CKLAA2",
+      "underwritingRuleGroupId": "1KQxx0000004CDsGAM",
+      "productPath": "01txx0000006i3DAAQ",
+      "apiName": "E2E_UWRule_1776619132"
+    }
+  },
+  {
+    "recordId": "1KXxx0000004CLwGAM",
+    "name": "E2E_UWRule_Updated_1776619238",
+    "ruleKey": "UW__autoSilver__E2E_UWRule_1776619237",
+    "metadata": {
+      "status": "Draft",
+      "description": "Updated by E2E test at 1776619238",
+      "sequence": 7,
+      "effectiveFromDateTime": "2025-09-01T00:00:00.000+0000",
+      "effectiveToDateTime": "2027-12-31T00:00:00.000+0000",
+      "evaluationSuccessTaskGroupId": "13oxx0000004CLwAAM",
+      "evaluationFailureTaskGroupId": "13oxx0000004CLxAAM",
+      "underwritingRuleGroupId": "1KQxx0000004CDsGAM",
+      "productPath": "01txx0000006i3DAAQ",
+      "apiName": "E2E_UWRule_1776619237"
+    }
+  },
+  {
+    "recordId": "1KXxx0000004CNYGA2",
+    "name": "E2E_UWRule_Updated_1776619325",
+    "ruleKey": "UW__autoSilver__E2E_UWRule_1776619323",
+    "metadata": {
+      "status": "Draft",
+      "description": "Updated by E2E test at 1776619325",
+      "sequence": 8,
+      "effectiveFromDateTime": "2025-09-01T00:00:00.000+0000",
+      "effectiveToDateTime": "2027-12-31T00:00:00.000+0000",
+      "evaluationSuccessTaskGroupId": "13oxx0000004CNYAA2",
+      "evaluationFailureTaskGroupId": "13oxx0000004CNZAA2",
+      "underwritingRuleGroupId": "1KQxx0000004CDsGAM",
+      "productPath": "01txx0000006i3DAAQ",
+      "apiName": "E2E_UWRule_1776619323"
+    }
+  },
+  {
+    "recordId": "1KXxx0000004CPAGA2",
+    "name": "E2E_UWRule_Updated_1776619461",
+    "ruleKey": "UW__autoSilver__E2E_UWRule_1776619460",
+    "metadata": {
+      "status": "Draft",
+      "description": "Updated by E2E test at 1776619461",
+      "sequence": 9,
+      "effectiveFromDateTime": "2025-09-01T00:00:00.000+0000",
+      "effectiveToDateTime": "2027-12-31T00:00:00.000+0000",
+      "evaluationSuccessTaskGroupId": "13oxx0000004CPAAA2",
+      "evaluationFailureTaskGroupId": "13oxx0000004CPBAA2",
+      "underwritingRuleGroupId": "1KQxx0000004CDsGAM",
+      "productPath": "01txx0000006i3DAAQ",
+      "apiName": "E2E_UWRule_1776619460"
     }
   }
 ]

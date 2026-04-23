@@ -296,7 +296,6 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
   private async updateRecordsInOrg(conn: Connection, ruleKeyMapping: RuleKeyEntry[]): Promise<number> {
     const updates = ruleKeyMapping.map((m) => ({
       Id: m.recordId,
-      RuleEngineType: 'ConstraintEngine',
       RuleKey: m.ruleKey,
     }));
 

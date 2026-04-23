@@ -10,19 +10,25 @@ type Auto;
 type LineItem {
     string product_id;
 
-    string Colour;
+    string Product;
 
-    int Year;
+    rule(product.id == "01txx0000006i3DAAQ" && Product == "01txx0000006i3DAAQ", "InsuranceUnderwritingRule", "UW__autoSilver__E2E_UWRule_1776619064", "True");
 
-    string UserProfile;
+    rule(product.id == "01txx0000006i3DAAQ" && Product == "01txx0000006i3DAAQ", "InsuranceUnderwritingRule", "UW__autoSilver__E2E_UWRule_1776619074", "True");
 
-    rule(product.id == "01txx0000006i3DAAQ" && Colour == "Red", "InsuranceSurchargeRule", "SC__autoSilver__BRE_Tax_AutoSilver_WA", "True");
+    rule(product.id == "01txx0000006i3DAAQ" && Product == "01txx0000006i3DAAQ", "InsuranceUnderwritingRule", "UW__autoSilver__E2E_UWRule_1776619088", "True");
 
-    rule(product.id == "01txx0000006i3GAAQ", "InsuranceSurchargeRule", "SC__autoSilver__BRE_Tax_Auto_EV", "True");
+    rule(product.id == "01txx0000006i3DAAQ" && Product == "01txx0000006i3DAAQ", "InsuranceUnderwritingRule", "UW__autoSilver__E2E_UWRule_1776619111", "True");
 
-    rule(product.id == "01txx0000006i3DAAQ" && Year > 2020, "InsuranceSurchargeRule", "SC__autoSilver__BRE_Fee_AutoSilver_Processing", "True");
+    rule(product.id == "01txx0000006i3DAAQ" && Product == "01txx0000006i3DAAQ", "InsuranceUnderwritingRule", "UW__autoSilver__E2E_UWRule_1776619183", "True");
 
-    rule(product.id == "01txx0000006i3DAAQ" && UserProfile != "System Administrator", "InsuranceSurchargeRule", "SC__autoSilver__BRE_Fee_AutoSilver_AdminFee", "True");
+    rule(product.id == "01txx0000006i3DAAQ" && Product == "01txx0000006i3DAAQ", "InsuranceUnderwritingRule", "UW__autoSilver__E2E_UWRule_1776619132", "True");
+
+    rule(product.id == "01txx0000006i3DAAQ" && Product == "01txx0000006i3DAAQ", "InsuranceUnderwritingRule", "UW__autoSilver__E2E_UWRule_1776619237", "True");
+
+    rule(product.id == "01txx0000006i3DAAQ" && Product == "01txx0000006i3DAAQ", "InsuranceUnderwritingRule", "UW__autoSilver__E2E_UWRule_1776619323", "True");
+
+    rule(product.id == "01txx0000006i3DAAQ" && Product == "01txx0000006i3DAAQ", "InsuranceUnderwritingRule", "UW__autoSilver__E2E_UWRule_1776619460", "True");
 
 }
 
