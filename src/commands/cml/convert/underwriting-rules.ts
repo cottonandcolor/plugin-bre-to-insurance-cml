@@ -294,25 +294,8 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
   }
 
   private async updateRecordsInOrg(conn: Connection, ruleKeyMapping: RuleKeyEntry[]): Promise<number> {
-    // Update UnderwritingRule records with RuleKey
-    const ruleUpdates = ruleKeyMapping.map((m) => ({
-      Id: m.recordId,
-      RuleKey: m.ruleKey,
-    }));
-
-    const ruleResults = await conn.sobject('UnderwritingRule').update(ruleUpdates);
-    const ruleResultArray = Array.isArray(ruleResults) ? ruleResults : [ruleResults];
+    this.log(`RuleKey on UnderwritingRule is read-only — use the mapping file to update via Connect API`);
     let successCount = 0;
-    for (const result of ruleResultArray) {
-      if (result.success) {
-        successCount++;
-      } else {
-        const id = 'id' in result ? result.id : 'unknown';
-        const errors = 'errors' in result ? JSON.stringify(result.errors) : 'unknown error';
-        this.warn(`Failed to update UnderwritingRule ${id}: ${errors}`);
-      }
-    }
-    this.log(`Updated ${successCount}/${ruleKeyMapping.length} UnderwritingRule records with RuleKey`);
 
     // Update parent UnderwritingRuleGroup records with RuleEngineType=ConstraintEngine
     const groupIds = new Set<string>();
