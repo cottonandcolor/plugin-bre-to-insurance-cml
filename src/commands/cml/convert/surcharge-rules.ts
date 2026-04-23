@@ -32,13 +32,13 @@ const messages = Messages.loadMessages('@salesforce/plugin-bre-to-cml', 'cml.con
 type ProductSurchargeRecord = RuleRecord & {
   RuleApiName: string | null;
   RuleDefinition: string | null;
-  Description: string | null;
-  Status: string | null;
   SequenceNumber: number | null;
   EffectiveFromDate: string | null;
   EffectiveToDate: string | null;
   IsProrationAllowed: boolean | null;
   IsRefundAllowed: boolean | null;
+  IsActive: boolean | null;
+  RuleEngineType: string | null;
 };
 
 export type CmlConvertSurchargeRulesResult = {
@@ -106,13 +106,13 @@ export default class CmlConvertSurchargeRules extends SfCommand<CmlConvertSurcha
       const rec = recordById.get(entry.recordId);
       if (rec) {
         entry.metadata = {
-          status: rec.Status,
-          description: rec.Description,
           sequenceNumber: rec.SequenceNumber,
           effectiveFromDate: rec.EffectiveFromDate,
           effectiveToDate: rec.EffectiveToDate,
           isProrationAllowed: rec.IsProrationAllowed,
           isRefundAllowed: rec.IsRefundAllowed,
+          isActive: rec.IsActive,
+          ruleEngineType: rec.RuleEngineType,
           productPath: rec.ProductPath,
         };
       }
@@ -145,7 +145,7 @@ export default class CmlConvertSurchargeRules extends SfCommand<CmlConvertSurcha
     const conn = targetOrg.getConnection(flags['api-version'] as string | undefined);
     const surchargeIds = flags['surcharge-ids'] as string | undefined;
     let soql =
-      'SELECT Id, Name, RuleApiName, RuleDefinition, ProductPath, Description, Status, SequenceNumber, EffectiveFromDate, EffectiveToDate, IsProrationAllowed, IsRefundAllowed FROM ProductSurcharge WHERE RuleApiName != null';
+      'SELECT Id, Name, RuleApiName, RuleDefinition, ProductPath, SequenceNumber, EffectiveFromDate, EffectiveToDate, IsProrationAllowed, IsRefundAllowed, IsActive, RuleEngineType FROM ProductSurcharge WHERE RuleApiName != null';
     if (surchargeIds) {
       const idList = surchargeIds
         .split(',')

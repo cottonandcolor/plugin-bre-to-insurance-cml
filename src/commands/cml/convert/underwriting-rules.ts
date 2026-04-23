@@ -36,10 +36,10 @@ type UnderwritingRuleRecord = RuleRecord & {
   Sequence: number | null;
   RuleKey: string | null;
   Description: string | null;
-  EffectiveFromDate: string | null;
-  EffectiveToDate: string | null;
-  EvaluationSuccessTaskGroup: string | null;
-  EvaluationFailureTaskGroup: string | null;
+  EffectiveFromDateTime: string | null;
+  EffectiveToDateTime: string | null;
+  EvaluationSuccessTaskGroupId: string | null;
+  EvaluationFailureTaskGroupId: string | null;
   UnderwritingRuleGroupId: string | null;
 };
 
@@ -111,10 +111,10 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
           status: rec.Status,
           description: rec.Description,
           sequence: rec.Sequence,
-          effectiveFromDate: rec.EffectiveFromDate,
-          effectiveToDate: rec.EffectiveToDate,
-          evaluationSuccessTaskGroup: rec.EvaluationSuccessTaskGroup,
-          evaluationFailureTaskGroup: rec.EvaluationFailureTaskGroup,
+          effectiveFromDateTime: rec.EffectiveFromDateTime,
+          effectiveToDateTime: rec.EffectiveToDateTime,
+          evaluationSuccessTaskGroupId: rec.EvaluationSuccessTaskGroupId,
+          evaluationFailureTaskGroupId: rec.EvaluationFailureTaskGroupId,
           underwritingRuleGroupId: rec.UnderwritingRuleGroupId,
           productPath: rec.ProductPath,
           apiName: rec.ApiName,
@@ -149,7 +149,7 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
     const conn = targetOrg.getConnection(flags['api-version'] as string | undefined);
     const uwIds = flags['uw-ids'] as string | undefined;
     let soql =
-      'SELECT Id, Name, ApiName, DynamicRuleDefinition, ProductPath, Status, Sequence, RuleKey, Description, EffectiveFromDate, EffectiveToDate, EvaluationSuccessTaskGroup, EvaluationFailureTaskGroup, UnderwritingRuleGroupId FROM UnderwritingRule WHERE DynamicRuleDefinition != null';
+      'SELECT Id, Name, ApiName, DynamicRuleDefinition, ProductPath, Status, Sequence, RuleKey, Description, EffectiveFromDateTime, EffectiveToDateTime, EvaluationSuccessTaskGroupId, EvaluationFailureTaskGroupId, UnderwritingRuleGroupId FROM UnderwritingRule WHERE DynamicRuleDefinition != null';
     if (uwIds) {
       const idList = uwIds
         .split(',')
