@@ -32,3 +32,7 @@ Optional JSON file with pre-exported ProductSurcharge records. If omitted, recor
 # flags.surcharge-ids.summary
 
 Comma-separated list of ProductSurcharge record IDs to convert. If omitted, all records with BRE rules are converted.
+
+# flags.auto-update.summary
+
+Automatically update ProductSurcharge records in the org with RuleEngineType=ConstraintEngine and the generated RuleKey.

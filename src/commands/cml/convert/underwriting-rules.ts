@@ -41,6 +41,7 @@ export type CmlConvertUnderwritingRulesResult = {
   cmlFile: string;
   associationsFile: string;
   ruleKeyMapping: RuleKeyEntry[];
+  updatedRecords: number;
 };
 
 export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnderwritingRulesResult> {
@@ -70,6 +71,11 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
       summary: messages.getMessage('flags.uw-ids.summary'),
       char: 's',
     }),
+    'auto-update': Flags.boolean({
+      summary: messages.getMessage('flags.auto-update.summary'),
+      char: 'u',
+      default: false,
+    }),
   };
 
   public async run(): Promise<CmlConvertUnderwritingRulesResult> {
@@ -79,11 +85,12 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
     const workspaceDir = flags['workspace-dir'] ?? '.';
     const targetOrg = flags['target-org'];
     const safeApi = api.replace(/[^a-zA-Z0-9_-]/g, '_');
+    const autoUpdate = flags['auto-update'];
 
     const records = await this.loadRecords(flags, targetOrg);
     if (records.length === 0) {
       this.log('No underwriting rules to convert.');
-      return { cmlFile: '', associationsFile: '', ruleKeyMapping: [] };
+      return { cmlFile: '', associationsFile: '', ruleKeyMapping: [], updatedRecords: 0 };
     }
 
     const ruleDefs = this.parseRuleDefinitions(records);
@@ -91,7 +98,15 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
     const { cmlModel, ruleKeyMapping } = buildCmlModel(ruleDefs, productIdToCode, 'UW', 'Underwriting eligibility');
     ruleKeyMapping.forEach((m) => this.log(`  -> ${m.name} => ${m.ruleKey}`));
 
-    return this.writeOutputFiles(cmlModel, ruleKeyMapping, safeApi, workspaceDir, api);
+    const result = await this.writeOutputFiles(cmlModel, ruleKeyMapping, safeApi, workspaceDir, api);
+
+    let updatedRecords = 0;
+    if (autoUpdate) {
+      const conn = targetOrg.getConnection(flags['api-version'] as string | undefined);
+      updatedRecords = await this.updateRecordsInOrg(conn, ruleKeyMapping);
+    }
+
+    return { ...result, updatedRecords };
   }
 
   private async loadRecords(
@@ -175,13 +190,37 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
     }
   }
 
+  private async updateRecordsInOrg(conn: Connection, ruleKeyMapping: RuleKeyEntry[]): Promise<number> {
+    this.log('\nUpdating UnderwritingRule records with RuleEngineType and RuleKey...');
+    const updates = ruleKeyMapping.map((m) => ({
+      Id: m.recordId,
+      RuleEngineType: 'ConstraintEngine',
+      RuleKey: m.ruleKey,
+    }));
+
+    const results = await conn.sobject('UnderwritingRule').update(updates);
+    const resultArray = Array.isArray(results) ? results : [results];
+    let successCount = 0;
+    for (const result of resultArray) {
+      if (result.success) {
+        successCount++;
+      } else {
+        const id = 'id' in result ? result.id : 'unknown';
+        const errors = 'errors' in result ? JSON.stringify(result.errors) : 'unknown error';
+        this.warn(`Failed to update ${id}: ${errors}`);
+      }
+    }
+    this.log(`Updated ${successCount}/${ruleKeyMapping.length} UnderwritingRule records`);
+    return successCount;
+  }
+
   private async writeOutputFiles(
     cmlModel: CmlModel,
     ruleKeyMapping: RuleKeyEntry[],
     safeApi: string,
     workspaceDir: string,
     api: string
-  ): Promise<CmlConvertUnderwritingRulesResult> {
+  ): Promise<Omit<CmlConvertUnderwritingRulesResult, 'updatedRecords'>> {
     const cmlPath = `${workspaceDir}/${safeApi}.cml`;
     const associationsPath = `${workspaceDir}/${safeApi}_Associations.csv`;
     const mappingPath = `${workspaceDir}/${safeApi}_RuleKeyMapping.json`;
@@ -199,7 +238,9 @@ export default class CmlConvertUnderwritingRules extends SfCommand<CmlConvertUnd
     this.log(
       `  2. Import: sf cml import as-expression-set --cml-api ${api} --context-definition <CD_NAME> --target-org <org>`
     );
-    this.log('  3. Update UnderwritingRule records with RuleKey from mapping file');
+    if (ruleKeyMapping.length > 0) {
+      this.log('  3. Records updated with RuleEngineType=ConstraintEngine and RuleKey (if --auto-update was used)');
+    }
 
     return { cmlFile: cmlPath, associationsFile: associationsPath, ruleKeyMapping };
   }
