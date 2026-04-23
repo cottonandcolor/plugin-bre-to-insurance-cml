@@ -1,0 +1,17 @@
+[
+  {
+    "recordId": "1Xrxx0000000005CAA",
+    "name": "Family comprehensive WA Tax",
+    "ruleKey": "SC__comprehensiveHealthPlan__Family_comprehensive_WA_Tax",
+    "metadata": {
+      "sequenceNumber": null,
+      "effectiveFromDate": "2025-03-19",
+      "effectiveToDate": null,
+      "isProrationAllowed": false,
+      "isRefundAllowed": false,
+      "isActive": true,
+      "ruleEngineType": null,
+      "productPath": "01txx0000006i3FAAQ"
+    }
+  }
+]

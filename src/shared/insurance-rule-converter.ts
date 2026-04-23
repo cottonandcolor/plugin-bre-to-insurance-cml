@@ -22,7 +22,7 @@ import {
   CmlType,
   Association,
 } from './types/types.js';
-import { CML_DATA_TYPES, CONSTRAINT_TYPES, ASSOCIATION_TYPES } from './constants/constants.js';
+import { CML_DATA_TYPES, ASSOCIATION_TYPES } from './constants/constants.js';
 
 export type RuleCondition = {
   contextTagName?: string;
@@ -241,6 +241,14 @@ export async function fetchProductCodes(conn: Connection, productIds: Set<string
   return idToCode;
 }
 
+export const CML_RULE_ACTION_NAMES: Record<string, string> = {
+  SC: 'InsuranceSurchargeRule',
+  UW: 'InsuranceUnderwritingRule',
+  EX: 'InsuranceClauseExclusionRule',
+};
+
+export const CML_RULE_SUCCESS_VALUE = 'True';
+
 export function buildCmlModel(
   ruleDefs: Array<{ record: RuleRecord; ruleDef: ParsedRuleDefinition }>,
   productIdToCode: Map<string, string>,
@@ -257,6 +265,7 @@ export function buildCmlModel(
   }
   cmlModel.addType(lineItemType);
 
+  const actionName = CML_RULE_ACTION_NAMES[keyPrefix] ?? keyPrefix;
   const ruleKeyMapping: RuleKeyEntry[] = [];
   for (const { record, ruleDef } of ruleDefs) {
     const rootProductId = record.ProductPath.split('/')[0];
@@ -264,13 +273,13 @@ export function buildCmlModel(
     const apiName = ruleDef.apiName ?? record.Name;
     const ruleKey = generateRuleKey(keyPrefix, productCode, apiName);
 
-    const constraint = new CmlConstraint(
-      CONSTRAINT_TYPES.CONSTRAINT,
+    const ruleConstraint = CmlConstraint.createRuleConstraint(
       buildConstraintDeclaration(ruleDef),
-      `"${constraintLabel}: ${record.Name}"`
+      actionName,
+      ruleKey,
+      CML_RULE_SUCCESS_VALUE
     );
-    constraint.name = ruleKey;
-    lineItemType.addConstraint(constraint);
+    lineItemType.addConstraint(ruleConstraint);
 
     cmlModel.addAssociation(
       new Association(null, BASE_LINE_ITEM_TYPE_NAME, ASSOCIATION_TYPES.TYPE, rootProductId, 'Product2', productCode)
